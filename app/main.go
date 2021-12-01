@@ -6,6 +6,7 @@ import (
 	"messenger-app/models"
 	"messenger-app/util"
 
+	chatController "messenger-app/api/controller/chat"
 	userController "messenger-app/api/controller/users"
 	"messenger-app/api/middlewares"
 	"messenger-app/api/router"
@@ -20,13 +21,15 @@ func main() {
 	db := util.MysqlDatabaseConnection(config)
 
 	userModel := models.NewUserModel(db)
+	chatModel := models.NewChatModel(db)
 
 	newUserController := userController.NewUserController(userModel)
+	newChatController := chatController.NewChatController(chatModel)
 
 	e := echo.New()
 	middlewares.LoggerMiddlewares(e)
 
-	router.Route(e, newUserController)
+	router.Route(e, newUserController, newChatController)
 
 	address := fmt.Sprintf("localhost:%d", config.Port)
 
