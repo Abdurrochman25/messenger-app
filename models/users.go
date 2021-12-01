@@ -34,11 +34,11 @@ func (m *GormUserModel) Register(user User) (User, error) {
 	return user, nil
 }
 
-func (m *GormUserModel) Login(email, password string) (User, error) {
+func (m *GormUserModel) Login(username, password string) (User, error) {
 	var user User
 	var err error
 
-	if err := m.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := m.db.Where("username = ? AND password = ?", username, password).First(&user).Error; err != nil {
 		return user, err
 	}
 
