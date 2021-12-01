@@ -2,6 +2,7 @@ package util
 
 import (
 	"messenger-app/config"
+	"messenger-app/models"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/driver/mysql"
@@ -22,5 +23,6 @@ func MysqlDatabaseConnection(config *config.AppConfig) *gorm.DB {
 }
 
 func DatabaseMigration(db *gorm.DB) {
-
+	db.AutoMigrate(models.User{})
+	db.AutoMigrate(models.Chat{})
 }
