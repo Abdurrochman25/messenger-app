@@ -25,5 +25,4 @@ func MysqlDatabaseConnection(config *config.AppConfig) *gorm.DB {
 func DatabaseMigration(db *gorm.DB) {
 	db.AutoMigrate(models.User{})
 	db.AutoMigrate(models.Chat{})
-	db.AutoMigrate(models.Conversation{})
 }

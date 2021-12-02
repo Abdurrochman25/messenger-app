@@ -22,10 +22,9 @@ func main() {
 
 	userModel := models.NewUserModel(db)
 	chatModel := models.NewChatModel(db)
-	conversationModel := models.NewConversationModel(db)
 
 	newUserController := userController.NewUserController(userModel)
-	newChatController := chatController.NewChatController(chatModel, userModel, conversationModel)
+	newChatController := chatController.NewChatController(chatModel, userModel)
 
 	e := echo.New()
 	middlewares.LoggerMiddlewares(e)

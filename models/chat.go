@@ -6,8 +6,9 @@ type Chat struct {
 	gorm.Model
 	ReceiverID int `json:"receiver_id" form:"receiver_id"`
 	// SenderID   int    `json:"sender_id" form:"sender_id"`
-	Message string `json:"message" form:"message"`
-	UserID  int
+	Message  string `json:"message" form:"message"`
+	Unreaded int    `gorm:"default:1" json:"readed" form:"readed"`
+	UserID   int
 }
 
 type GormChatModel struct {
@@ -24,6 +25,7 @@ type ChatModel interface {
 	GetAllMessage(userId int) ([]Chat, error)
 	GetConversation(userId int) ([]int, error)
 	GetLastMessage(userId, receiverId int) (string, error)
+	GetCountUnreadMessage(userId, receiverId int) (int, error)
 }
 
 func (m *GormChatModel) SendMessage(chat Chat) (Chat, error) {
@@ -65,4 +67,12 @@ func (m *GormChatModel) GetLastMessage(userId, receiverId int) (string, error) {
 		return message, err
 	}
 	return message, nil
+}
+
+func (m *GormChatModel) GetCountUnreadMessage(userId, receiverId int) (int, error) {
+	var count int
+	if err := m.db.Raw("SELECT SUM(unreaded) FROM chats WHERE receiver_id = ? AND user_id = ?", userId, receiverId).Scan(&count).Error; err != nil {
+		return count, err
+	}
+	return count, nil
 }

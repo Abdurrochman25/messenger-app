@@ -21,5 +21,4 @@ func Route(e *echo.Echo, userController *users.UserController, chatController *c
 	e.GET("/chat/:receiverId", chatController.GetMessageByReceiverId, jwtMiddleware)
 	e.GET("/chat", chatController.GetAllMessage, jwtMiddleware)
 	e.GET("/conversation", chatController.GetConversation, jwtMiddleware)
-	e.GET("/message", chatController.GetLastMessage, jwtMiddleware)
 }

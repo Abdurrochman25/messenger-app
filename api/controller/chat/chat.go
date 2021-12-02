@@ -10,16 +10,20 @@ import (
 )
 
 type ChatController struct {
-	chatModel         models.ChatModel
-	userModel         models.UserModel
-	conversationModel models.ConversationModel
+	chatModel models.ChatModel
+	userModel models.UserModel
 }
 
-func NewChatController(chatModel models.ChatModel, userModel models.UserModel, conversationModel models.ConversationModel) *ChatController {
+type ConversationResponse struct {
+	Conversation string `json:"conversation" form:"conversation"`
+	Message      string `json:"message" form:"message"`
+	Unread       int    `json:"unread" form:"unread"`
+}
+
+func NewChatController(chatModel models.ChatModel, userModel models.UserModel) *ChatController {
 	return &ChatController{
 		chatModel,
 		userModel,
-		conversationModel,
 	}
 }
 
@@ -43,25 +47,6 @@ func (controller *ChatController) SendMessageController(c echo.Context) error {
 	}
 
 	data, err := controller.chatModel.SendMessage(chat)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"success": false,
-			"code":    500,
-			"message": "Internal Server Error",
-		})
-	}
-
-	user1, _ := controller.userModel.GetNameById(int(userId))
-	user2, _ := controller.userModel.GetNameById(int(chat.ReceiverID))
-
-	conversation := models.Conversation{
-		Name:        user1 + "-" + user2,
-		UnreadCount: +1,
-		UserID:      int(userId),
-		ChatID:      int(data.ID),
-	}
-
-	_, err = controller.conversationModel.CreateConversation(conversation)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"success": false,
@@ -132,46 +117,27 @@ func (controller *ChatController) GetAllMessage(c echo.Context) error {
 
 func (controller *ChatController) GetConversation(c echo.Context) error {
 	userId := middlewares.ExtractTokenUser(c)
-
-	data, err := controller.chatModel.GetConversation(int(userId))
-
-	var dataNameReceiver, dataConv []string
-	for i := range data {
-		dataNameTemp, _ := controller.userModel.GetNameById(data[i])
-		dataNameReceiver = append(dataNameReceiver, dataNameTemp)
-	}
+	// Get User Name
 	nameUser, _ := controller.userModel.GetNameById(int(userId))
 
-	for _, v := range dataNameReceiver {
-		vConcate := nameUser + "-" + v
-		dataConv = append(dataConv, vConcate)
-	}
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"success": false,
-			"code":    500,
-			"message": "Internal Server Error",
-		})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"success": true,
-		"code":    200,
-		"message": "Success Send Message",
-		"data":    dataConv,
-	})
-
-}
-
-func (controller *ChatController) GetLastMessage(c echo.Context) error {
-	userId := middlewares.ExtractTokenUser(c)
-
+	// Get Receiver Id
 	receiverId, err := controller.chatModel.GetConversation(int(userId))
-	var messageData []string
+
+	var dataMap ConversationResponse
+	var data []interface{}
+
 	for i := range receiverId {
-		data, _ := controller.chatModel.GetLastMessage(int(userId), receiverId[i])
-		messageData = append(messageData, data)
+		dataNameTemp, _ := controller.userModel.GetNameById(receiverId[i])
+		vConcate := nameUser + "-" + dataNameTemp
+		message, _ := controller.chatModel.GetLastMessage(int(userId), receiverId[i])
+		counter, _ := controller.chatModel.GetCountUnreadMessage(int(userId), receiverId[i])
+
+		dataMap = ConversationResponse{
+			Conversation: vConcate,
+			Message:      message,
+			Unread:       counter,
+		}
+		data = append(data, dataMap)
 	}
 
 	if err != nil {
@@ -186,7 +152,7 @@ func (controller *ChatController) GetLastMessage(c echo.Context) error {
 		"success": true,
 		"code":    200,
 		"message": "Success Send Message",
-		"data":    messageData,
+		"data":    data,
 	})
 
 }
