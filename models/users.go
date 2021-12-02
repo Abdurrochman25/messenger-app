@@ -25,6 +25,7 @@ func NewUserModel(db *gorm.DB) *GormUserModel {
 type UserModel interface {
 	Register(User) (User, error)
 	Login(username, password string) (User, error)
+	GetNameById(userId int) (string, error)
 }
 
 func (m *GormUserModel) Register(user User) (User, error) {
@@ -53,4 +54,12 @@ func (m *GormUserModel) Login(username, password string) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (m *GormUserModel) GetNameById(userId int) (string, error) {
+	var user User
+	if err := m.db.Where("id = ?", userId).First(&user).Error; err != nil {
+		return user.Username, err
+	}
+	return user.Username, nil
 }
