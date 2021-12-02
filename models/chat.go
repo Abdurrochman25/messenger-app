@@ -22,10 +22,10 @@ func NewChatModel(db *gorm.DB) *GormChatModel {
 type ChatModel interface {
 	SendMessage(Chat) (Chat, error)
 	GetMessageByReceiverId(userId, receiverId int) ([]Chat, error)
-	GetAllMessage(userId int) ([]Chat, error)
 	GetConversation(userId int) ([]int, error)
 	GetLastMessage(userId, receiverId int) (string, error)
 	GetCountUnreadMessage(userId, receiverId int) (int, error)
+	UpdateUnreadMessage(userid, receiverId int) (Chat, error)
 }
 
 func (m *GormChatModel) SendMessage(chat Chat) (Chat, error) {
@@ -38,16 +38,7 @@ func (m *GormChatModel) SendMessage(chat Chat) (Chat, error) {
 func (m *GormChatModel) GetMessageByReceiverId(userId, receiverId int) ([]Chat, error) {
 	var chat []Chat
 
-	if err := m.db.Where("user_id = ? AND receiver_id = ?", userId, receiverId).Find(&chat).Error; err != nil {
-		return chat, err
-	}
-	return chat, nil
-}
-
-func (m *GormChatModel) GetAllMessage(userId int) ([]Chat, error) {
-	var chat []Chat
-
-	if err := m.db.Where("user_id = ? || receiver_id = ?", userId, userId).Find(&chat).Error; err != nil {
+	if err := m.db.Where("(user_id = ? AND receiver_id = ?) OR (receiver_id = ? AND user_id = ?)", userId, receiverId, userId, receiverId).Find(&chat).Error; err != nil {
 		return chat, err
 	}
 	return chat, nil
@@ -75,4 +66,12 @@ func (m *GormChatModel) GetCountUnreadMessage(userId, receiverId int) (int, erro
 		return count, err
 	}
 	return count, nil
+}
+
+func (m *GormChatModel) UpdateUnreadMessage(userId, receiverId int) (Chat, error) {
+	var chat Chat
+	if err := m.db.Raw("UPDATE chats SET unreaded = 0 WHERE receiver_id = ? AND user_id = ?", userId, receiverId).Scan(&chat).Error; err != nil {
+		return chat, err
+	}
+	return chat, nil
 }

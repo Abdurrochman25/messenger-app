@@ -84,20 +84,7 @@ func (controller *ChatController) GetMessageByReceiverId(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"success": true,
-		"code":    200,
-		"message": "Success Send Message",
-		"data":    data,
-	})
-
-}
-
-func (controller *ChatController) GetAllMessage(c echo.Context) error {
-	userId := middlewares.ExtractTokenUser(c)
-
-	data, err := controller.chatModel.GetAllMessage(int(userId))
-
+	_, err = controller.chatModel.UpdateUnreadMessage(int(userId), receiverId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"success": false,
