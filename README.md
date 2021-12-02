@@ -34,7 +34,7 @@ List of overall feature in this Project (To get more details see the API Documen
 - Install Go and Database MySQL/XAMPP
 - Clone this repository in your $PATH:
 ```
-$ git clone 
+$ git clone https://github.com/Abdurrochman25/messenger-app.git
 ```
 - Create file .env based on this project 
 ``
