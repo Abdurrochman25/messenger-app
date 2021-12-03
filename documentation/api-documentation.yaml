@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: MessengerApp
+  version: 1.0.0
+  description: |
+    RESTfulAPI Documentation with Echo Framework (Go Languange)
+    
+    **Description**
+    
+    Messenger App merupakan sebuah aplikasi prototype Chatting seperti WhatsApp. Disini pengguna dapat saling mengirim pesan ke sesama pengguna lainnya, pengguna juga dapat melihat seluruh obrolan yang dilakukannya dengan pengguna lain.
+    
+servers:
+  - url: 'localhost:8080/api/'
+    description: API Access Link for MessengerApp
+tags:
+  - name: User
+    description: API Authentication
+  - name: Chat
+    description: API Chats
+
+paths:
+  /register:
+    post:
+      tags:
+        - User
+      summary: Register User
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseRegister'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: Login User
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseLogin'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /chat:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Chat
+      summary: Send Message
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                receiver_id:
+                  type: integer
+                message:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/StatusOK'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /chat/{receiverId}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Chat
+      summary: Get Chat by Receiver Id
+      parameters:
+        - name: receiverId
+          in: path
+          required: true
+          description: ID For Spesific Receiver
+          schema:
+            type: integer 
+      responses:
+        '200':
+          $ref: '#/components/responses/StatusOK'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+  /conversation:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Chat
+      summary: Get All Conversation
+      responses:
+        '200':
+          $ref: '#/components/responses/StatusOK'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    StatusOK:
+      description: Status OK
+      content:
+        application/json:
+          example:
+            success: true
+            message: Status OK
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          example:
+            success: false
+            message: Bad Request
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          example:
+            success: false
+            message: Internal Server Error
+    ResponseRegister:
+      description: Success Register Account
+      content:
+        application/json:
+          example:
+            success: true
+            message: Success Register Account
+    ResponseLogin:
+      description: Success Login
+      content:
+        application/json:
+          example:
+            success: true
+            message: Success Login
+            token: exc54WqsR6ryu.mYTW340iPIlkqb
