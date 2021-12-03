@@ -14,7 +14,7 @@
 Messenger App merupakan sebuah aplikasi prototype Chatting seperti WhatsApp. Disini pengguna dapat saling mengirim pesan ke sesama pengguna lainnya, pengguna juga dapat melihat seluruh obrolan yang dilakukannya dengan pengguna lain.
 
 # Database Scheme
-![ERD] (https://github.com/Abdurrochman25/messenger-app/blob/main/screenshoot/messeger-ERD.png)
+![ERD](https://github.com/Abdurrochman25/messenger-app/blob/main/screenshoot/messeger-ERD.png)
 
 # Feature 
 List of overall feature in this Project (To get more details see the API Documentation below)
