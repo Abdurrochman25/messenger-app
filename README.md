@@ -7,7 +7,6 @@
 - [Description](#description)
 - [How to Use](#how-to-use)
 - [Database Schema](#database-schema)
-- [Testing Coverage]($testing-coverage)
 - [Feature](#feature)
 - [Endpoints](#endpoints)
 
@@ -17,12 +16,8 @@ Messenger App merupakan sebuah aplikasi prototype Chatting seperti WhatsApp. Dis
 # Database Scheme
 ![ERD]
 
-# Testing Coverage
-![TESTING]
-
 # Feature 
 List of overall feature in this Project (To get more details see the API Documentation below)
- _._._._._._._._._._._
 | No.| Feature           | Keterangan                                                             |
 | :- | :---------------- | :--------------------------------------------------------------------- |
 | 1. | Register          | Authentication Process                                                 |
@@ -47,4 +42,4 @@ go run app/main.go
 ```
 
 # Endpoints
-Read the API documentation here [API Endpoint Documentation]
+Read the API documentation here [API Endpoint Documentation] (https://app.swaggerhub.com/apis/m.abdurrochman25/messenger-app/1.0.0) (Swagger)
